@@ -1,7 +1,7 @@
 const objectToString = Object.prototype.toString
 
 export const isNull = (value: any): value is null => {
-  return value === 'null'
+  return value === null
 }
 
 export const isUndefined = (value: any): value is undefined => {
