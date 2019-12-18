@@ -1,4 +1,4 @@
-import { isUndefined, isNull, isDate, isObject } from './util'
+import { isUndefined, isNull, isDate, isPlainObject } from './util'
 
 /**
  * 拼接url参数
@@ -29,7 +29,7 @@ export const buildURL = (url: string, params?: any): string => {
     values.forEach(val => {
       if (isDate(val)) {
         val = val.toISOString()
-      } else if (isObject(val)) {
+      } else if (isPlainObject(val)) {
         val = JSON.stringify(val)
       }
       parts.push(`${encode(key)}=${encode(val)}`)

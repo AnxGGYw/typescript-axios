@@ -12,6 +12,6 @@ export const isDate = (value: any): value is Date => {
   return objectToString.call(value) === '[object Date]'
 }
 
-export const isObject = (value: any): value is Object => {
+export const isPlainObject = (value: any): value is Object => {
   return !isNull(value) && objectToString.call(value) === '[object Object]'
 }
