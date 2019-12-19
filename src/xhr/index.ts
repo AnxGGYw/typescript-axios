@@ -1,16 +1,15 @@
 import { RequestConfig, AxiosResponse, AxiosPromiseResponse } from '../types'
 import { parseHeaders } from '../helpers/headers'
 import { transformResponse } from '../helpers/data'
+import { createError } from '../helpers/error'
 
 const xhr = (config: RequestConfig): AxiosPromiseResponse => {
   return new Promise((resolve, reject) => {
-    let { url, method = 'get', data = null, headers, responseType } = config
+    let { url, method = 'get', data = null, headers, responseType, timeout } = config
 
     const request = new XMLHttpRequest()
 
-    if (responseType) {
-      request.responseType = responseType
-    }
+    definedRequest(request, config)
 
     request.open(method.toUpperCase(), url, true)
 
@@ -28,7 +27,14 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
         config,
         request
       }
-      resolve(response)
+      handleResponse(response)
+    }
+
+    request.onerror = (): void => {
+      reject(createError('Network Error', config, null, request))
+    }
+    request.ontimeout = (): void => {
+      reject(createError(`Timeout of ${timeout} ms`, config, 'ECONNABORTED', request))
     }
 
     // 设置headers需要在open方法之后
@@ -39,6 +45,34 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
         request.setRequestHeader(name, headers[name])
       }
     })
+
+    // 配置自定义参数
+    function definedRequest(request: XMLHttpRequest, config: RequestConfig): void {
+      const { responseType, timeout } = config
+
+      if (responseType) {
+        request.responseType = responseType
+      }
+      if (timeout) {
+        request.timeout = timeout
+      }
+    }
+    // 处理返回结果
+    function handleResponse(response: AxiosResponse): void {
+      if (response.status >= 200 && response.status < 300) {
+        resolve(response)
+      } else {
+        reject(
+          createError(
+            `Request failed with status code: ${response.status}`,
+            config,
+            null,
+            request,
+            response
+          )
+        )
+      }
+    }
 
     request.send(data)
   })
