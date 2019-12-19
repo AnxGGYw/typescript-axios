@@ -1,13 +1,13 @@
-import { RequestConfig } from './types'
+import { RequestConfig, AxiosPromiseResponse } from './types'
 import xhr from './xhr'
 import { buildURL } from './helpers/url'
 import { transformRequest } from './helpers/data'
 import { processHeaders } from './helpers/headers'
 
 // 入口entry
-const axois = (config: RequestConfig): void => {
+const axois = (config: RequestConfig): AxiosPromiseResponse => {
   processConfig(config)
-  xhr(config)
+  return xhr(config)
 }
 // 处理配置
 const processConfig = (config: RequestConfig): void => {

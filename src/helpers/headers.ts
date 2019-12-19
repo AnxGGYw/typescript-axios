@@ -24,3 +24,24 @@ export const processHeaders = (headers: any, data: any): any => {
 
   return headers
 }
+
+export const parseHeaders = (headers: string): any => {
+  let parsedHeaders = Object.create(null)
+
+  if (!headers) {
+    return parsedHeaders
+  }
+  headers.split('\r\n').forEach(perLine => {
+    let [key, value] = perLine.split(':')
+    if (!key) {
+      return
+    }
+    key.trim().toLowerCase()
+    if (value) {
+      value = value.trim()
+    }
+    parsedHeaders[key] = value
+  })
+
+  return parsedHeaders
+}
