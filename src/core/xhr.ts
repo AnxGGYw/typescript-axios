@@ -11,7 +11,7 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
 
     definedRequest(request, config)
 
-    request.open(method.toUpperCase(), url, true)
+    request.open(method.toUpperCase(), url!, true)
 
     request.onreadystatechange = () => {
       if (request.readyState !== 4) {
