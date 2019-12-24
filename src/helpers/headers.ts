@@ -1,4 +1,5 @@
-import { isPlainObject } from './util'
+import { isPlainObject, deepMerge } from './util'
+import { Method } from '../types'
 
 // 转换header中的属性名为我们定义的属性名
 const normalizeHeaderName = (headers: any, normalizeName: any): void => {
@@ -44,4 +45,29 @@ export const parseHeaders = (headers: string): any => {
   })
 
   return parsedHeaders
+}
+
+export const flatHeaders = (headers: any, method: Method): any => {
+  if (!headers) {
+    return headers
+  }
+
+  headers = deepMerge(headers.common, headers[method], headers)
+
+  const needDeleteMethods: string[] = [
+    'get',
+    'delete',
+    'head',
+    'options',
+    'post',
+    'put',
+    'patch',
+    'common'
+  ]
+
+  needDeleteMethods.forEach(method => {
+    delete headers[method]
+  })
+
+  return headers
 }
