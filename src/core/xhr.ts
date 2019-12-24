@@ -1,11 +1,19 @@
 import { RequestConfig, AxiosResponse, AxiosPromiseResponse } from '../types'
 import { parseHeaders } from '../helpers/headers'
-import { transformResponse } from '../helpers/data'
 import { createError } from '../helpers/error'
+import transform from './transform'
 
 const xhr = (config: RequestConfig): AxiosPromiseResponse => {
   return new Promise((resolve, reject) => {
-    let { url, method = 'get', data = null, headers, responseType, timeout } = config
+    let {
+      url,
+      method = 'get',
+      data = null,
+      headers,
+      responseType,
+      timeout,
+      transformResponse
+    } = config
 
     const request = new XMLHttpRequest()
 
@@ -20,7 +28,7 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       const responseHeaders = parseHeaders(request.getAllResponseHeaders())
       const responseData = responseType === 'text' ? request.responseText : request.response
       const response: AxiosResponse = {
-        data: transformResponse(responseData),
+        data: transform(responseData, responseHeaders, transformResponse),
         status: request.status,
         statusText: request.statusText,
         headers: responseHeaders,

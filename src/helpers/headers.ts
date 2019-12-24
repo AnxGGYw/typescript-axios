@@ -16,7 +16,7 @@ const normalizeHeaderName = (headers: any, normalizeName: any): void => {
 
 export const processHeaders = (headers: any, data: any): any => {
   normalizeHeaderName(headers, 'Content-Type')
-
+  // 对象类型的data， 统一添加 Content-Type : application/json;charset=utf-8
   if (isPlainObject(data)) {
     if (headers && !headers['Content-Type']) {
       headers['Content-Type'] = 'application/json;charset=utf-8'
@@ -26,6 +26,7 @@ export const processHeaders = (headers: any, data: any): any => {
   return headers
 }
 
+// 解析headers
 export const parseHeaders = (headers: string): any => {
   let parsedHeaders = Object.create(null)
 
