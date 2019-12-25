@@ -1,6 +1,6 @@
 import { RequestConfig, AxiosPromiseResponse } from '../types'
 import xhr from './xhr'
-import { buildURL } from '../helpers/url'
+import { buildURL, isAbsoluteURL, combineURL } from '../helpers/url'
 import { flatHeaders } from '../helpers/headers'
 import transform from './transform'
 
@@ -20,7 +20,10 @@ const processConfig = (config: RequestConfig): void => {
 }
 // 转换url
 const transformURL = (config: RequestConfig): string => {
-  const { url, params, paramsSerializer } = config
+  let { url, params, paramsSerializer, baseURL } = config
+  if (baseURL && !isAbsoluteURL(url!)) {
+    url = combineURL(baseURL, url)
+  }
   return buildURL(url!, params, paramsSerializer)
 }
 

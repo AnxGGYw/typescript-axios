@@ -110,3 +110,16 @@ function resolveURL(url: string): URLOrigin {
     host
   }
 }
+
+// 绝对路径
+export const isAbsoluteURL = (url: string): boolean => {
+  return /(^[a-z][a-z\d\+\-\.]*:)?\/\//i.test(url)
+}
+
+export const combineURL = (baseURL: string, relativeURL?: string): string => {
+  if (!relativeURL) {
+    return baseURL
+  }
+  // 将baseURL后面的/ 以及 relativeURL前面的/ 去掉
+  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace('/^/+/', '')
+}
