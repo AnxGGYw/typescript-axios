@@ -25,7 +25,7 @@ const stratDeepMerge = (valOne: any, valTwo: any): any => {
 
 const stratKeysFromValTwo = ['url', 'data', 'params']
 
-const stratKeysDeepMerge = ['headers']
+const stratKeysDeepMerge = ['headers', 'auth']
 
 stratKeysFromValTwo.forEach(stratKeyVal => {
   strats[stratKeyVal] = stratfromValTwo

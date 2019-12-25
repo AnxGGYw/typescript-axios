@@ -21,7 +21,8 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       xsrfCookieName,
       xsrfHeaderName,
       onUploadProgress,
-      onDownloadProgress
+      onDownloadProgress,
+      auth
     } = config
 
     const request = new XMLHttpRequest()
@@ -106,6 +107,9 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
         if (xsrfCookieValue && xsrfHeaderName) {
           headers[xsrfHeaderName] = xsrfCookieValue
         }
+      }
+      if (auth) {
+        headers['Authorization'] = `Basic ${btoa(auth.username + ':' + auth.passowrd)}`
       }
       // 设置headers需要在open方法之后
       Object.keys(headers).forEach(name => {
