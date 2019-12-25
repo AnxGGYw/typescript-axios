@@ -1,4 +1,4 @@
-import { isUndefined, isNull, isDate, isPlainObject } from './util'
+import { isUndefined, isNull, isDate, isPlainObject, isURLSearchParams } from './util'
 
 interface URLOrigin {
   protocol: string
@@ -12,35 +12,49 @@ interface URLOrigin {
  * @param {*} [params]
  * @returns {string}
  */
-export const buildURL = (url: string, params?: any): string => {
+export const buildURL = (
+  url: string,
+  params?: any,
+  paramsSerializer?: (params: any) => string
+): string => {
   if (!params) {
     return url
   }
-  const parts: string[] = []
 
-  Object.keys(params).forEach(key => {
-    const value = params[key]
-    if (isUndefined(value) || isNull(value)) {
-      return
-    }
-    // 因为需要涉及到数组参数, 这里统一用[]处理
-    let values = []
-    if (Array.isArray(value)) {
-      values = value
-      key += '[]'
-    } else {
-      values = [value]
-    }
-    values.forEach(val => {
-      if (isDate(val)) {
-        val = val.toISOString()
-      } else if (isPlainObject(val)) {
-        val = JSON.stringify(val)
+  // params解析后的结果
+  let normalizeParams
+
+  if (paramsSerializer) {
+    normalizeParams = paramsSerializer(params)
+  } else if (isURLSearchParams(params)) {
+    normalizeParams = params.toString()
+  } else {
+    const parts: string[] = []
+
+    Object.keys(params).forEach(key => {
+      const value = params[key]
+      if (isUndefined(value) || isNull(value)) {
+        return
       }
-      parts.push(`${encode(key)}=${encode(val)}`)
+      // 因为需要涉及到数组参数, 这里统一用[]处理
+      let values = []
+      if (Array.isArray(value)) {
+        values = value
+        key += '[]'
+      } else {
+        values = [value]
+      }
+      values.forEach(val => {
+        if (isDate(val)) {
+          val = val.toISOString()
+        } else if (isPlainObject(val)) {
+          val = JSON.stringify(val)
+        }
+        parts.push(`${encode(key)}=${encode(val)}`)
+      })
     })
-  })
-  let normalizeParams = parts.join('&')
+    normalizeParams = parts.join('&')
+  }
   if (normalizeParams) {
     // 忽略url的哈希值
     if (url.includes('#')) {

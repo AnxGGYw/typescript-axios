@@ -20,8 +20,8 @@ const processConfig = (config: RequestConfig): void => {
 }
 // 转换url
 const transformURL = (config: RequestConfig): string => {
-  const { url, params } = config
-  return buildURL(url!, params)
+  const { url, params, paramsSerializer } = config
+  return buildURL(url!, params, paramsSerializer)
 }
 
 const throwCancelRequestedError = (config: RequestConfig) => {
