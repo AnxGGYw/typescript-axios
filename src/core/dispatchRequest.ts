@@ -19,7 +19,7 @@ const processConfig = (config: RequestConfig): void => {
   config.headers = flatHeaders(config.headers, config.method!)
 }
 // 转换url
-const transformURL = (config: RequestConfig): string => {
+export const transformURL = (config: RequestConfig): string => {
   let { url, params, paramsSerializer, baseURL } = config
   if (baseURL && !isAbsoluteURL(url!)) {
     url = combineURL(baseURL, url)

@@ -80,6 +80,8 @@ export interface Axios {
   put<T = any>(url: string, data?: any, config?: RequestConfig): AxiosPromiseResponse<T>
 
   patch<T = any>(url: string, data?: any, config?: RequestConfig): AxiosPromiseResponse<T>
+
+  getUri(config?: RequestConfig): string
 }
 
 export interface AxiosInstance extends Axios {

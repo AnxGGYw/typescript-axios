@@ -48,6 +48,7 @@ export const parseHeaders = (headers: string): any => {
   return parsedHeaders
 }
 
+// 拍平headers
 export const flatHeaders = (headers: any, method: Method): any => {
   if (!headers) {
     return headers
