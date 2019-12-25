@@ -12,7 +12,8 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       headers,
       responseType,
       timeout,
-      transformResponse
+      transformResponse,
+      cancelToken
     } = config
 
     const request = new XMLHttpRequest()
@@ -80,6 +81,19 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
           )
         )
       }
+    }
+
+    if (cancelToken) {
+      cancelToken.promise.then(
+        reason => {
+          // 取消请求
+          request.abort()
+          reject(reason)
+        },
+        err => {
+          reject(err)
+        }
+      )
     }
 
     request.send(data)

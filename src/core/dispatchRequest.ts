@@ -6,6 +6,9 @@ import transform from './transform'
 
 // dispatch entry
 const dispatchRequest = (config: RequestConfig): AxiosPromiseResponse => {
+  // 检测当前请求是否手动取消过
+  throwCancelRequestedError(config)
+
   processConfig(config)
   return xhr(config)
 }
@@ -19,6 +22,12 @@ const processConfig = (config: RequestConfig): void => {
 const transformURL = (config: RequestConfig): string => {
   const { url, params } = config
   return buildURL(url!, params)
+}
+
+const throwCancelRequestedError = (config: RequestConfig) => {
+  if (config.cancelToken) {
+    config.cancelToken.throwRequestedError()
+  }
 }
 
 export default dispatchRequest
