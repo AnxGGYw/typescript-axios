@@ -2,6 +2,8 @@ import { RequestConfig, AxiosResponse, AxiosPromiseResponse } from '../types'
 import { parseHeaders } from '../helpers/headers'
 import { createError } from '../helpers/error'
 import transform from './transform'
+import { isURLSameOringin } from '../helpers/url'
+import cookie from '../helpers/cookie'
 
 const xhr = (config: RequestConfig): AxiosPromiseResponse => {
   return new Promise((resolve, reject) => {
@@ -13,7 +15,10 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       responseType,
       timeout,
       transformResponse,
-      cancelToken
+      cancelToken,
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName
     } = config
 
     const request = new XMLHttpRequest()
@@ -44,6 +49,13 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
     }
     request.ontimeout = (): void => {
       reject(createError(`Timeout of ${timeout} ms`, config, 'ECONNABORTED', request))
+    }
+
+    if ((withCredentials || isURLSameOringin(url!)) && xsrfCookieName) {
+      const xsrfCookieValue = cookie.read(xsrfCookieName)
+      if (xsrfCookieValue && xsrfHeaderName) {
+        headers[xsrfHeaderName] = xsrfCookieValue
+      }
     }
 
     // 设置headers需要在open方法之后

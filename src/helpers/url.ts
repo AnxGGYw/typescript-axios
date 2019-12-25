@@ -1,5 +1,10 @@
 import { isUndefined, isNull, isDate, isPlainObject } from './util'
 
+interface URLOrigin {
+  protocol: string
+  host: string
+}
+
 /**
  * 拼接url参数
  *
@@ -69,4 +74,25 @@ const encode = (value: string): string => {
     .replace(/%40/g, '@')
     .replace(/%5b/gi, '[')
     .replace(/%5d/gi, ']')
+}
+
+// 判断是否同源
+export function isURLSameOringin(requestURL: string): boolean {
+  const { protocol, host } = resolveURL(requestURL)
+  const { protocol: cProtocol, host: cHost } = currentUrlParseNode
+  return protocol === cProtocol && host === cHost
+}
+
+// 利用创建a标签配置href属性, 获取protocol, host
+const urlParseNode = document.createElement('a')
+// 当前页面
+const currentUrlParseNode = resolveURL(window.location.href)
+
+function resolveURL(url: string): URLOrigin {
+  urlParseNode.setAttribute('href', url)
+  const { protocol, host } = urlParseNode
+  return {
+    protocol,
+    host
+  }
 }

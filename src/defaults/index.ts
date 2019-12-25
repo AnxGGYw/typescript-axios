@@ -13,6 +13,11 @@ const axoisDefaults: RequestConfig = {
     }
   },
 
+  xsrfCookieName: 'XSRF-TOKEN',
+
+  // xsrfHeaderName 是承载 xsrf token 的值的 HTTP 头的名称
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
   transformRequest: [
     (data: any, headers?: any): any => {
       processHeaders(headers, data)
