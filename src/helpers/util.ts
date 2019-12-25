@@ -16,6 +16,14 @@ export const isPlainObject = (value: any): value is Object => {
   return !isNull(value) && objectToString.call(value) === '[object Object]'
 }
 
+export const isFormData = (value: any): value is FormData => {
+  return !isUndefined(value) && value instanceof FormData
+}
+
+export const isURLSearchParams = (value: any): value is URLSearchParams => {
+  return !isUndefined(value) && value instanceof URLSearchParams
+}
+
 export const extend = <T, U>(to: T, from: U): T & U => {
   for (const key in from) {
     ;(to as T & U)[key] = from[key] as any

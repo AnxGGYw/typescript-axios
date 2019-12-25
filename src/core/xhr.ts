@@ -4,6 +4,7 @@ import { createError } from '../helpers/error'
 import transform from './transform'
 import { isURLSameOringin } from '../helpers/url'
 import cookie from '../helpers/cookie'
+import { isFormData } from '../helpers/util'
 
 const xhr = (config: RequestConfig): AxiosPromiseResponse => {
   return new Promise((resolve, reject) => {
@@ -18,59 +19,26 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       cancelToken,
       withCredentials,
       xsrfCookieName,
-      xsrfHeaderName
+      xsrfHeaderName,
+      onUploadProgress,
+      onDownloadProgress
     } = config
 
     const request = new XMLHttpRequest()
 
-    definedRequest(request, config)
-
     request.open(method.toUpperCase(), url!, true)
 
-    request.onreadystatechange = () => {
-      if (request.readyState !== 4) {
-        return
-      }
-      const responseHeaders = parseHeaders(request.getAllResponseHeaders())
-      const responseData = responseType === 'text' ? request.responseText : request.response
-      const response: AxiosResponse = {
-        data: transform(responseData, responseHeaders, transformResponse),
-        status: request.status,
-        statusText: request.statusText,
-        headers: responseHeaders,
-        config,
-        request
-      }
-      handleResponse(response)
-    }
+    configureRequest()
 
-    request.onerror = (): void => {
-      reject(createError('Network Error', config, null, request))
-    }
-    request.ontimeout = (): void => {
-      reject(createError(`Timeout of ${timeout} ms`, config, 'ECONNABORTED', request))
-    }
+    configureEvents()
 
-    if ((withCredentials || isURLSameOringin(url!)) && xsrfCookieName) {
-      const xsrfCookieValue = cookie.read(xsrfCookieName)
-      if (xsrfCookieValue && xsrfHeaderName) {
-        headers[xsrfHeaderName] = xsrfCookieValue
-      }
-    }
+    processHeaders()
 
-    // 设置headers需要在open方法之后
-    Object.keys(headers).forEach(name => {
-      if (data === null && name.toLowerCase() === 'content-type') {
-        delete headers[data]
-      } else {
-        request.setRequestHeader(name, headers[name])
-      }
-    })
+    processCancel()
 
-    // 配置自定义参数
-    function definedRequest(request: XMLHttpRequest, config: RequestConfig): void {
-      const { responseType, timeout, withCredentials } = config
+    request.send(data)
 
+    function configureRequest(): void {
       if (responseType) {
         request.responseType = responseType
       }
@@ -79,6 +47,37 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       }
       if (withCredentials) {
         request.withCredentials = withCredentials
+      }
+    }
+
+    function configureEvents(): void {
+      request.onreadystatechange = () => {
+        if (request.readyState !== 4) {
+          return
+        }
+        const responseHeaders = parseHeaders(request.getAllResponseHeaders())
+        const responseData = responseType === 'text' ? request.responseText : request.response
+        const response: AxiosResponse = {
+          data: transform(responseData, responseHeaders, transformResponse),
+          status: request.status,
+          statusText: request.statusText,
+          headers: responseHeaders,
+          config,
+          request
+        }
+        handleResponse(response)
+      }
+      request.onerror = (): void => {
+        reject(createError('Network Error', config, null, request))
+      }
+      request.ontimeout = (): void => {
+        reject(createError(`Timeout of ${timeout} ms`, config, 'ECONNABORTED', request))
+      }
+      if (onUploadProgress) {
+        request.upload.onprogress = onUploadProgress
+      }
+      if (onDownloadProgress) {
+        request.onprogress = onDownloadProgress
       }
     }
     // 处理返回结果
@@ -98,20 +97,40 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
       }
     }
 
-    if (cancelToken) {
-      cancelToken.promise.then(
-        reason => {
-          // 取消请求
-          request.abort()
-          reject(reason)
-        },
-        err => {
-          reject(err)
+    function processHeaders(): void {
+      if (isFormData(data)) {
+        delete headers['Content-Type']
+      }
+      if ((withCredentials || isURLSameOringin(url!)) && xsrfCookieName) {
+        const xsrfCookieValue = cookie.read(xsrfCookieName)
+        if (xsrfCookieValue && xsrfHeaderName) {
+          headers[xsrfHeaderName] = xsrfCookieValue
         }
-      )
+      }
+      // 设置headers需要在open方法之后
+      Object.keys(headers).forEach(name => {
+        if (data === null && name.toLowerCase() === 'content-type') {
+          delete headers[data]
+        } else {
+          request.setRequestHeader(name, headers[name])
+        }
+      })
     }
 
-    request.send(data)
+    function processCancel(): void {
+      if (cancelToken) {
+        cancelToken.promise.then(
+          reason => {
+            // 取消请求
+            request.abort()
+            reject(reason)
+          },
+          err => {
+            reject(err)
+          }
+        )
+      }
+    }
   })
 }
 
