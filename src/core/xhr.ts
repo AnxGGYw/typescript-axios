@@ -57,13 +57,16 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
 
     // 配置自定义参数
     function definedRequest(request: XMLHttpRequest, config: RequestConfig): void {
-      const { responseType, timeout } = config
+      const { responseType, timeout, withCredentials } = config
 
       if (responseType) {
         request.responseType = responseType
       }
       if (timeout) {
         request.timeout = timeout
+      }
+      if (withCredentials) {
+        request.withCredentials = withCredentials
       }
     }
     // 处理返回结果
