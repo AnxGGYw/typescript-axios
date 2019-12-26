@@ -12,7 +12,7 @@ export const transformResponse = (data: any): any => {
     try {
       data = JSON.parse(data)
     } catch (error) {
-      console.log(`transformResponseData error`)
+      // console.log(`not a json type, try transformResponseData to json error`)
     }
   }
   return data

@@ -22,7 +22,7 @@ export const buildURL = (
   }
 
   // params解析后的结果
-  let normalizeParams
+  let normalizeParams: string
 
   if (paramsSerializer) {
     normalizeParams = paramsSerializer(params)
@@ -121,5 +121,5 @@ export const combineURL = (baseURL: string, relativeURL?: string): string => {
     return baseURL
   }
   // 将baseURL后面的/ 以及 relativeURL前面的/ 去掉
-  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace('/^/+/', '')
+  return baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
 }

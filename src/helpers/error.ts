@@ -5,7 +5,7 @@ class AxiosError extends Error {
   code?: string | null
   request?: any
   response?: AxiosResponse
-  isAxoisError: boolean
+  isAxiosError: boolean
 
   constructor(
     message: string,
@@ -20,7 +20,7 @@ class AxiosError extends Error {
     this.code = code
     this.request = request
     this.response = response
-    this.isAxoisError = true
+    this.isAxiosError = true
 
     Object.setPrototypeOf(this, AxiosError.prototype)
   }
