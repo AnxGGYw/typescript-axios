@@ -34,7 +34,7 @@
     "precommit": "lint-staged",
     "travis-deploy-once": "travis-deploy-once",
     "prebub": "npm run build",
-    "pub": "sh release sh"
+    "pub": "sh release.sh"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
