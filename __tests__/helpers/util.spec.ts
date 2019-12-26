@@ -38,7 +38,7 @@ describe('helpers: util', () => {
 
     test('validate isFormData', () => {
       expect(isFormData(new FormData())).toBeTruthy()
-      expect(isFormData({})).toBeFalsy
+      expect(isFormData({})).toBeFalsy()
     })
 
     test('validate isURLSearchParams', () => {
