@@ -10,9 +10,9 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
   return new Promise((resolve, reject) => {
     let {
       url,
-      method = 'get',
+      method,
       data = null,
-      headers,
+      headers = {},
       responseType,
       timeout,
       transformResponse,
@@ -28,7 +28,7 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
 
     const request = new XMLHttpRequest()
 
-    request.open(method.toUpperCase(), url!, true)
+    request.open(method!.toUpperCase(), url!, true)
 
     configureRequest()
 
@@ -58,7 +58,8 @@ const xhr = (config: RequestConfig): AxiosPromiseResponse => {
           return
         }
         const responseHeaders = parseHeaders(request.getAllResponseHeaders())
-        const responseData = responseType === 'text' ? request.responseText : request.response
+        const responseData =
+          responseType && responseType !== 'text' ? request.response : request.responseText
         const response: AxiosResponse = {
           data: transform(responseData, responseHeaders, transformResponse),
           status: request.status,

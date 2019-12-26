@@ -18,7 +18,7 @@ const stratDeepMerge = (valOne: any, valTwo: any): any => {
     return valTwo
   } else if (isPlainObject(valOne)) {
     return deepMerge(valOne)
-  } else if (typeof valOne !== 'undefined') {
+  } else {
     return valOne
   }
 }
