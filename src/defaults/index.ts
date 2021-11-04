@@ -2,7 +2,7 @@ import { RequestConfig } from '../types'
 import { processHeaders } from '../helpers/headers'
 import { transformRequest, transformResponse } from '../helpers/data'
 
-const axoisDefaults: RequestConfig = {
+const axiosDefaults: RequestConfig = {
   method: 'get',
 
   timeout: 3000,
@@ -41,11 +41,11 @@ const methodWithoutData = ['get', 'delete', 'head', 'options']
 const methodWithData = ['post', 'put', 'patch']
 
 methodWithoutData.forEach(method => {
-  axoisDefaults.headers[method] = {}
+  axiosDefaults.headers[method] = {}
 })
 
 methodWithData.forEach(method => {
-  axoisDefaults.headers[method] = {
+  axiosDefaults.headers[method] = {
     'Content-Type': 'application/x-www-form-urlencoded'
   }
 })
